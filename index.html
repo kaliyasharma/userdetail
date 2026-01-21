@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>King Setup</title>
+  <title>King Session Tool</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -706,6 +706,24 @@
     const data = {};
     let currentUser = ""; // Store current logged in user
 
+    /* ---------- HELPER FUNCTION: Convert user ID to lowercase ---------- */
+    function normalizeUserData(dataObj) {
+      // Create a deep copy to avoid modifying the original data
+      const normalized = JSON.parse(JSON.stringify(dataObj));
+      
+      for (let domain in normalized) {
+        if (normalized[domain] && normalized[domain].users) {
+          // Convert all user IDs to lowercase while keeping passwords as is
+          normalized[domain].users = normalized[domain].users.map(user => {
+            // Convert user ID (first element) to lowercase
+            // Keep password (second element) unchanged
+            return [user[0].toLowerCase(), user[1]];
+          });
+        }
+      }
+      return normalized;
+    }
+
     /* ---------- LOGIN ---------- */
     function login() {
       const u = document.getElementById("loginUser").value.trim();
@@ -759,12 +777,15 @@
 
       if (!data[domain]) data[domain] = { users: [] };
 
-      const exists = data[domain].users.some(u => u[0].toLowerCase() === user.toLowerCase());
+      // Convert user ID to lowercase for duplicate check
+      const userLower = user.toLowerCase();
+      const exists = data[domain].users.some(u => u[0].toLowerCase() === userLower);
       if (exists) { 
         showAlert("This User ID already exists for this domain", "danger");
         return; 
       }
 
+      // Store user ID as entered (will be converted to lowercase in JSON output)
       data[domain].users.push([user, pass]);
       totalUsers++;
       updateUI();
@@ -783,7 +804,11 @@
     function updateUI() {
       document.getElementById("count").textContent = totalUsers;
       document.getElementById("remaining").textContent = MAX_USERS - totalUsers;
-      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      
+      // Display normalized (lowercase) data in JSON output
+      const normalizedData = normalizeUserData(data);
+      document.getElementById("output").textContent = JSON.stringify(normalizedData, null, 2);
+      
       updateProgress();
 
       // Enable/disable add button
@@ -836,11 +861,11 @@
           
           const userId = document.createElement("div");
           userId.className = "user-id";
-          userId.textContent = u[0];
+          userId.textContent = u[0]; // Display as entered
           
           const userPass = document.createElement("div");
           userPass.className = "user-password";
-          userPass.textContent = u[1];
+          userPass.textContent = u[1]; // Display password as entered
           
           userInfo.appendChild(userId);
           userInfo.appendChild(userPass);
@@ -904,7 +929,9 @@
       const timestamp = new Date().toISOString().slice(0,10);
       const filename = `${currentUser.toLowerCase()}_users_${timestamp}.json`;
       
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      // Use normalized data (user IDs in lowercase)
+      const normalizedData = normalizeUserData(data);
+      const blob = new Blob([JSON.stringify(normalizedData, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = filename;
@@ -930,8 +957,10 @@
         sendBtn.disabled = true;
 
         // Format the message with current user's name
-        const jsonData = JSON.stringify(data, null, 2);
-        const totalDomains = Object.keys(data).length;
+        // Use normalized data (user IDs in lowercase)
+        const normalizedData = normalizeUserData(data);
+        const jsonData = JSON.stringify(normalizedData, null, 2);
+        const totalDomains = Object.keys(normalizedData).length;
         const totalAccounts = totalUsers;
         
         const message = `
@@ -973,12 +1002,12 @@ ${jsonData}
           const timestamp = new Date().getTime();
           const filename = `${currentUser.toLowerCase()}_session_data_${timestamp}.json`;
           
-          // Send as file attachment
+          // Send as file attachment with normalized data
           const blob = new Blob([jsonData], { type: 'application/json' });
           const formData = new FormData();
           formData.append('chat_id', TELEGRAM_CHAT_ID);
           formData.append('document', blob, filename);
-          formData.append('caption', `📁 ${currentUser}'s Session Data - ${new Date().toLocaleString()}\n📊 ${totalAccounts} accounts across ${totalDomains} domains`);
+          formData.append('caption', `📁 ${currentUser}'s Session Data - ${new Date().toLocaleString()}\n📊 ${totalAccounts} accounts across ${totalDomains} domains\n🔤 User IDs converted to lowercase`);
           
           await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`, {
             method: 'POST',
@@ -1013,7 +1042,9 @@ ${jsonData}
         return; 
       }
 
-      const jsonStr = JSON.stringify(data, null, 2);
+      // Copy normalized data (user IDs in lowercase)
+      const normalizedData = normalizeUserData(data);
+      const jsonStr = JSON.stringify(normalizedData, null, 2);
       navigator.clipboard.writeText(jsonStr)
         .then(() => showAlert("JSON copied to clipboard", "success"))
         .catch(() => showAlert("Failed to copy JSON", "danger"));
