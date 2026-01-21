@@ -557,6 +557,111 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    /* Popup Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      background: linear-gradient(90deg, var(--danger) 0%, #e11570 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .modal-header i {
+      font-size: 1.5rem;
+    }
+
+    .modal-header h3 {
+      font-weight: 600;
+      font-size: 1.3rem;
+      margin: 0;
+    }
+
+    .modal-body {
+      padding: 25px;
+      text-align: center;
+    }
+
+    .modal-body p {
+      font-size: 1.1rem;
+      color: var(--dark);
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
+      min-width: 120px;
+    }
+
+    .modal-btn.ok {
+      background: var(--danger);
+      color: white;
+    }
+
+    .modal-btn.ok:hover {
+      background: #e11570;
+      transform: translateY(-2px);
+    }
+
+    .modal-btn.cancel {
+      background: var(--light-gray);
+      color: var(--dark);
+    }
+
+    .modal-btn.cancel:hover {
+      background: #dee2e6;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -711,6 +816,22 @@
     <i class="fas fa-save"></i> Data saved
   </div>
 
+  <!-- Popup Modal -->
+  <div id="restrictionModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Domain Restriction</h3>
+      </div>
+      <div class="modal-body">
+        <p id="modalMessage">This domain does not work on our software</p>
+        <div class="modal-actions">
+          <button class="modal-btn ok" onclick="closeModal()">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     /* ---------- CONFIG ---------- */
     const allowedUsers = [
@@ -735,6 +856,16 @@
     let totalUsers = 0;
     let data = {}; // Changed from const to let
     let currentUser = ""; // Store current logged in user
+
+    /* ---------- MODAL FUNCTIONS ---------- */
+    function showModal(message) {
+      document.getElementById('modalMessage').textContent = message;
+      document.getElementById('restrictionModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('restrictionModal').classList.remove('active');
+    }
 
     /* ---------- LOCAL STORAGE FUNCTIONS ---------- */
     const STORAGE_KEYS = {
@@ -847,7 +978,14 @@
       // Update UI with current user info
       document.getElementById("limit").textContent = MAX_USERS;
       document.getElementById("remaining").textContent = MAX_USERS - totalUsers;
-      document.getElementById("currentUsername").textContent = u;
+      
+      // Special display for Utpal123 (admin)
+      if (currentUser === "Utpal123") {
+        document.getElementById("currentUsername").innerHTML = `<span style="color: var(--warning);">${u} (ADMIN)</span>`;
+      } else {
+        document.getElementById("currentUsername").textContent = u;
+      }
+      
       document.getElementById("currentUserInfo").classList.remove("hidden");
       
       updateProgress();
@@ -860,7 +998,12 @@
       // Update UI with loaded data
       updateUI();
       
-      showAlert(`Welcome back, ${u}! Your data has been loaded. You can add up to ${MAX_USERS} users.`, "success");
+      // Special welcome message for Utpal123
+      if (currentUser === "Utpal123") {
+        showAlert(`Welcome ${u}! You have ADMIN privileges - no domain restrictions apply.`, "success");
+      } else {
+        showAlert(`Welcome back, ${u}! Your data has been loaded. You can add up to ${MAX_USERS} users.`, "success");
+      }
     }
 
     /* ---------- ADD USER ---------- */
@@ -874,8 +1017,11 @@
         return; 
       }
 
-      if (restrictedDomains.includes(domain)) {
-        showAlert("This domain does not work on our software", "danger");
+      // Check domain restriction ONLY if current user is NOT "Utpal123"
+      // Utpal123 has admin privileges and can add users to any domain
+      if (currentUser !== "Utpal123" && restrictedDomains.includes(domain)) {
+        // Show popup modal instead of inline alert
+        showModal("This domain does not work on our software");
         return;
       }
 
@@ -1254,6 +1400,13 @@ ${jsonData}
       window.addEventListener('beforeunload', function() {
         if (currentUser !== "") {
           saveToLocalStorage();
+        }
+      });
+      
+      // Close modal when clicking outside
+      document.getElementById('restrictionModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeModal();
         }
       });
     });
