@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>King Setup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --info: #4361ee;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --light-gray: #e9ecef;
+      --card-bg: #ffffff;
+      --shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+      --radius: 12px;
+      --transition: all 0.3s ease;
+      --telegram: #0088cc;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dark);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Login Card */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+      border: none;
+    }
+
+    .card-header {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 20px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header h3 {
+      font-weight: 600;
+      font-size: 1.8rem;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-header::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(30deg);
+    }
+
+    .card-body {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+      font-size: 0.95rem;
+    }
+
+    .input-with-icon {
+      position: relative;
+    }
+
+    .input-with-icon i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 14px 15px 14px 45px;
+      font-size: 16px;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      background-color: var(--light);
+      transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      background-color: white;
+    }
+
+    .form-control::placeholder {
+      color: #adb5bd;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      margin-top: 10px;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(90deg, var(--primary-dark) 0%, #5a08a5 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-success {
+      background: linear-gradient(90deg, var(--success) 0%, #3a86ff 100%);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(90deg, #3ab8e0 0%, #2978ff 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-telegram {
+      background: linear-gradient(90deg, var(--telegram) 0%, #005f8c 100%);
+      color: white;
+    }
+
+    .btn-telegram:hover {
+      background: linear-gradient(90deg, #0077b5 0%, #004c70 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      padding: 8px 15px;
+      font-size: 0.85rem;
+      width: auto;
+      border-radius: 6px;
+    }
+
+    .btn-danger:hover {
+      background: #e11570;
+      transform: scale(1.05);
+    }
+
+    .btn:disabled {
+      background: var(--gray);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Stats Cards */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--primary);
+    }
+
+    .stat-card.total {
+      border-left-color: var(--primary);
+    }
+
+    .stat-card.limit {
+      border-left-color: var(--secondary);
+    }
+
+    .stat-card.remaining {
+      border-left-color: var(--success);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--gray);
+      font-weight: 500;
+    }
+
+    /* Domain Sections */
+    .domain-section {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .domain-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .domain-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .domain-title i {
+      color: var(--secondary);
+    }
+
+    .user-count {
+      background: var(--primary);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* User Items */
+    .user-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      transition: var(--transition);
+      border-left: 4px solid var(--success);
+    }
+
+    .user-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-id {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .user-password {
+      font-family: monospace;
+      background: var(--light-gray);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    /* Output Area */
+    .output-container {
+      margin-top: 30px;
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .output-header h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .output-header h3 i {
+      color: var(--secondary);
+    }
+
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      overflow-x: auto;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Hidden Class */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      color: var(--gray);
+      font-size: 0.9rem;
+      padding: 20px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .stats-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .card-body {
+        padding: 20px;
+      }
+      
+      .domain-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    /* Alert Styling */
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #f5c6cb;
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border-left: 4px solid #c3e6cb;
+    }
+
+    .alert-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border-left: 4px solid #bee5eb;
+    }
+
+    .alert i {
+      font-size: 1.5rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--gray);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: var(--light-gray);
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      margin: 20px 0;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .progress-bar {
+      height: 10px;
+      background-color: var(--light-gray);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success) 0%, var(--primary) 100%);
+      border-radius: 5px;
+      transition: width 0.5s ease;
+    }
+
+    /* Action Buttons Container */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Current User Info */
+    .current-user-info {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      backdrop-filter: blur(5px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- LOGIN -->
+    <div id="loginBox" class="card fade-in">
+      <div class="card-header">
+        <h3><i class="fas fa-crown"></i> King Session Tool</h3>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i>
+          <div>Enter your credentials to access the user management system.</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">User ID</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input id="loginUser" class="form-control" placeholder="Enter your user ID">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input id="loginPass" type="password" class="form-control" placeholder="Enter your password">
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="login()">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        
+        <div class="footer">
+          <p>Authorized users only. Unauthorized access is prohibited.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="appBox" class="card hidden">
+      <div class="card-header">
+        <h3><i class="fas fa-users-cog"></i> Domain User Manager</h3>
+        <div id="currentUserInfo" class="current-user-info hidden">
+          Logged in as: <strong id="currentUsername"></strong>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Stats -->
+        <div class="stats-container">
+          <div class="stat-card total">
+            <div class="stat-value" id="count">0</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+          <div class="stat-card limit">
+            <div class="stat-value" id="limit">0</div>
+            <div class="stat-label">User Limit</div>
+          </div>
+          <div class="stat-card remaining">
+            <div class="stat-value" id="remaining">0</div>
+            <div class="stat-label">Remaining</div>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+          <div class="progress-label">
+            <span>Usage</span>
+            <span id="progress-percentage">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Add User Form -->
+        <h4 style="margin: 25px 0 15px; color: var(--dark);">
+          <i class="fas fa-user-plus"></i> Add New User
+        </h4>
+        
+        <div class="form-group">
+          <label class="form-label">Domain</label>
+          <div class="input-with-icon">
+            <i class="fas fa-globe"></i>
+            <input id="domain" class="form-control" placeholder="example.com">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">User ID</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user-tag"></i>
+            <input id="userid" class="form-control" placeholder="Enter user ID">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-key"></i>
+            <input id="password" class="form-control" placeholder="Enter password">
+          </div>
+        </div>
+        
+        <button id="addBtn" class="btn btn-success" onclick="addUser()">
+          <i class="fas fa-plus-circle"></i> Add User
+        </button>
+
+        <!-- User List -->
+        <div id="userListContainer" class="user-list">
+          <!-- Dynamic content will be inserted here -->
+        </div>
+
+        <!-- Actions -->
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="downloadJSON()">
+            <i class="fas fa-download"></i> Download JSON
+          </button>
+          <button id="sendTelegramBtn" class="btn btn-telegram" onclick="sendToTelegram()">
+            <i class="fab fa-telegram"></i> Send Admin
+          </button>
+          <button class="btn" onclick="logout()" style="background: var(--light-gray); color: var(--dark);">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+
+        <!-- Output JSON -->
+        <div class="output-container">
+          <div class="output-header">
+            <h3><i class="fas fa-code"></i> Output JSON</h3>
+            <button class="btn" onclick="copyJSON()" style="width: auto; padding: 8px 15px;">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+          <pre id="output">{}</pre>
+        </div>
+        
+        <div class="footer">
+          <p>King Session Tool v1.2 • Data will be lost on page refresh</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ---------- CONFIG ---------- */
+    const allowedUsers = [
+      { user: "Shivam", pass: "Ajay2121", limit: 20 },
+      { user: "Ajmat", pass: "Abcd9090", limit: 40 },
+      { user: "Utpal123", pass: "Abcd1234", limit: 40 },
+      { user: "sahid", pass: "Abcd1234", limit: 20 }
+    ];
+
+    const restrictedDomains = [
+      "ganesh247.com",
+      "skyexch777.com",
+      "livesports9.club"
+    ];
+
+    // Telegram Bot Configuration
+    const TELEGRAM_BOT_TOKEN = "8296076165:AAGyuOA60NRsXCXIWsXMsP6AfPokCsVgSWc";
+    const TELEGRAM_CHAT_ID = "8225719362";
+    
+    /* ---------- STATE ---------- */
+    let MAX_USERS = 0;
+    let totalUsers = 0;
+    const data = {};
+    let currentUser = ""; // Store current logged in user
+
+    /* ---------- LOGIN ---------- */
+    function login() {
+      const u = document.getElementById("loginUser").value.trim();
+      const p = document.getElementById("loginPass").value.trim();
+
+      const found = allowedUsers.find(x => x.user === u && x.pass === p);
+      if (!found) { 
+        showAlert("Invalid User ID or Password", "danger");
+        return; 
+      }
+
+      MAX_USERS = found.limit;
+      currentUser = u; // Store current user
+      
+      // Update UI with current user info
+      document.getElementById("limit").textContent = MAX_USERS;
+      document.getElementById("remaining").textContent = MAX_USERS;
+      document.getElementById("currentUsername").textContent = u;
+      document.getElementById("currentUserInfo").classList.remove("hidden");
+      
+      updateProgress();
+
+      // Add animation and switch view
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("appBox").classList.remove("hidden");
+      document.getElementById("appBox").classList.add("fade-in");
+      
+      showAlert(`Welcome, ${u}! You can add up to ${MAX_USERS} users.`, "success");
+    }
+
+    /* ---------- ADD USER ---------- */
+    function addUser() {
+      const domain = document.getElementById("domain").value.trim().toLowerCase();
+      const user = document.getElementById("userid").value.trim();
+      const pass = document.getElementById("password").value.trim();
+
+      if (!domain || !user || !pass) { 
+        showAlert("All fields are required", "danger");
+        return; 
+      }
+
+      if (restrictedDomains.includes(domain)) {
+        showAlert("This domain does not work on our software", "danger");
+        return;
+      }
+
+      if (totalUsers >= MAX_USERS) { 
+        disableAdd(); 
+        return; 
+      }
+
+      if (!data[domain]) data[domain] = { users: [] };
+
+      const exists = data[domain].users.some(u => u[0].toLowerCase() === user.toLowerCase());
+      if (exists) { 
+        showAlert("This User ID already exists for this domain", "danger");
+        return; 
+      }
+
+      data[domain].users.push([user, pass]);
+      totalUsers++;
+      updateUI();
+
+      // Clear form
+      document.getElementById("userid").value = "";
+      document.getElementById("password").value = "";
+      
+      // Focus back to user ID field
+      document.getElementById("userid").focus();
+      
+      showAlert(`User "${user}" added successfully to ${domain}`, "success");
+    }
+
+    /* ---------- UPDATE UI ---------- */
+    function updateUI() {
+      document.getElementById("count").textContent = totalUsers;
+      document.getElementById("remaining").textContent = MAX_USERS - totalUsers;
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      updateProgress();
+
+      // Enable/disable add button
+      document.getElementById("addBtn").disabled = totalUsers >= MAX_USERS;
+      
+      // Enable/disable Telegram send button
+      document.getElementById("sendTelegramBtn").disabled = totalUsers === 0;
+
+      // Render user list with remove buttons
+      const container = document.getElementById("userListContainer");
+      
+      if (Object.keys(data).length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-users"></i>
+            <p>No users added yet</p>
+            <p>Start by adding a user using the form above</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = "";
+      
+      for (let domain in data) {
+        const domainSection = document.createElement("div");
+        domainSection.className = "domain-section fade-in";
+        
+        const domainHeader = document.createElement("div");
+        domainHeader.className = "domain-header";
+        
+        const domainTitle = document.createElement("div");
+        domainTitle.className = "domain-title";
+        domainTitle.innerHTML = `<i class="fas fa-server"></i> ${domain}`;
+        
+        const userCount = document.createElement("div");
+        userCount.className = "user-count";
+        userCount.textContent = `${data[domain].users.length} user(s)`;
+        
+        domainHeader.appendChild(domainTitle);
+        domainHeader.appendChild(userCount);
+        domainSection.appendChild(domainHeader);
+        
+        data[domain].users.forEach((u, index) => {
+          const userItem = document.createElement("div");
+          userItem.className = "user-item fade-in";
+          
+          const userInfo = document.createElement("div");
+          userInfo.className = "user-info";
+          
+          const userId = document.createElement("div");
+          userId.className = "user-id";
+          userId.textContent = u[0];
+          
+          const userPass = document.createElement("div");
+          userPass.className = "user-password";
+          userPass.textContent = u[1];
+          
+          userInfo.appendChild(userId);
+          userInfo.appendChild(userPass);
+          
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "btn-danger";
+          removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
+          removeBtn.onclick = () => removeUser(domain, index);
+          
+          userItem.appendChild(userInfo);
+          userItem.appendChild(removeBtn);
+          domainSection.appendChild(userItem);
+        });
+        
+        container.appendChild(domainSection);
+      }
+    }
+
+    /* ---------- UPDATE PROGRESS BAR ---------- */
+    function updateProgress() {
+      const percentage = MAX_USERS > 0 ? Math.round((totalUsers / MAX_USERS) * 100) : 0;
+      document.getElementById("progress-fill").style.width = `${percentage}%`;
+      document.getElementById("progress-percentage").textContent = `${percentage}%`;
+      
+      // Change color based on usage
+      const progressFill = document.getElementById("progress-fill");
+      if (percentage >= 90) {
+        progressFill.style.background = "linear-gradient(90deg, var(--warning) 0%, var(--danger) 100%)";
+      } else if (percentage >= 70) {
+        progressFill.style.background = "linear-gradient(90deg, var(--warning) 0%, var(--primary) 100%)";
+      } else {
+        progressFill.style.background = "linear-gradient(90deg, var(--success) 0%, var(--primary) 100%)";
+      }
+    }
+
+    /* ---------- REMOVE USER ---------- */
+    function removeUser(domain, index) {
+      if (confirm(`Are you sure you want to remove this user from ${domain}?`)) {
+        const removed = data[domain].users.splice(index, 1);
+        totalUsers--;
+        if (data[domain].users.length === 0) delete data[domain];
+        updateUI();
+        showAlert(`User "${removed[0][0]}" removed from ${domain}`, "success");
+      }
+    }
+
+    /* ---------- DISABLE ADD BUTTON ---------- */
+    function disableAdd() {
+      document.getElementById("addBtn").disabled = true;
+      showAlert("User limit reached. Cannot add more users.", "danger");
+    }
+
+    /* ---------- DOWNLOAD JSON ---------- */
+    function downloadJSON() {
+      if (totalUsers === 0) { 
+        showAlert("No data to download", "danger");
+        return; 
+      }
+
+      // Create filename with current user's name
+      const timestamp = new Date().toISOString().slice(0,10);
+      const filename = `${currentUser.toLowerCase()}_users_${timestamp}.json`;
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      
+      showAlert(`JSON file "${filename}" downloaded successfully`, "success");
+    }
+
+    /* ---------- Send Admin ---------- */
+    async function sendToTelegram() {
+      if (totalUsers === 0) { 
+        showAlert("No data to Send Admin", "danger");
+        return; 
+      }
+
+      const sendBtn = document.getElementById("sendTelegramBtn");
+      const originalHTML = sendBtn.innerHTML;
+      
+      try {
+        // Show loading state
+        sendBtn.innerHTML = '<span class="loading"></span> Sending...';
+        sendBtn.disabled = true;
+
+        // Format the message with current user's name
+        const jsonData = JSON.stringify(data, null, 2);
+        const totalDomains = Object.keys(data).length;
+        const totalAccounts = totalUsers;
+        
+        const message = `
+🚀 *King Session Tool - Data Export*
+👤 *User:* ${currentUser}
+📅 ${new Date().toLocaleString()}
+📊 *Statistics:*
+   • Domains: ${totalDomains}
+   • Total Accounts: ${totalAccounts}
+   • Usage: ${Math.round((totalUsers / MAX_USERS) * 100)}%
+   • User Limit: ${MAX_USERS}
+
+📝 *User Data:* 
+\`\`\`json
+${jsonData}
+\`\`\`
+
+✅ Data successfully exported from King Session Tool by ${currentUser}
+`;
+
+        // Send Admin
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown',
+            disable_web_page_preview: true
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+          // Create filename with current user's name for the attachment
+          const timestamp = new Date().getTime();
+          const filename = `${currentUser.toLowerCase()}_session_data_${timestamp}.json`;
+          
+          // Send as file attachment
+          const blob = new Blob([jsonData], { type: 'application/json' });
+          const formData = new FormData();
+          formData.append('chat_id', TELEGRAM_CHAT_ID);
+          formData.append('document', blob, filename);
+          formData.append('caption', `📁 ${currentUser}'s Session Data - ${new Date().toLocaleString()}\n📊 ${totalAccounts} accounts across ${totalDomains} domains`);
+          
+          await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`, {
+            method: 'POST',
+            body: formData
+          });
+          
+          showAlert(`✅ Data successfully sent to Telegram as "${filename}"`, "success");
+          
+        } else {
+          throw new Error(result.description || 'Failed to send message');
+        }
+
+      } catch (error) {
+        console.error('Telegram send error:', error);
+        showAlert(`❌ Failed to Send Admin: ${error.message}`, "danger");
+        
+        // Show instructions if chat_id is wrong
+        if (error.message.includes("chat not found") || error.message.includes("chat_id")) {
+          showAlert("Telegram Chat ID is incorrect. Please check your Chat ID: " + TELEGRAM_CHAT_ID, "info");
+        }
+      } finally {
+        // Restore button
+        sendBtn.innerHTML = originalHTML;
+        sendBtn.disabled = false;
+      }
+    }
+
+    /* ---------- COPY JSON TO CLIPBOARD ---------- */
+    function copyJSON() {
+      if (totalUsers === 0) { 
+        showAlert("No data to copy", "danger");
+        return; 
+      }
+
+      const jsonStr = JSON.stringify(data, null, 2);
+      navigator.clipboard.writeText(jsonStr)
+        .then(() => showAlert("JSON copied to clipboard", "success"))
+        .catch(() => showAlert("Failed to copy JSON", "danger"));
+    }
+
+    /* ---------- SHOW ALERT ---------- */
+    function showAlert(message, type) {
+      // Remove any existing alerts
+      const existingAlerts = document.querySelectorAll('.alert');
+      existingAlerts.forEach(alert => alert.remove());
+      
+      const alertDiv = document.createElement("div");
+      alertDiv.className = `alert alert-${type} fade-in`;
+      
+      const icon = type === "success" ? "fa-check-circle" : 
+                  type === "info" ? "fa-info-circle" : "fa-exclamation-circle";
+      alertDiv.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <div>${message}</div>
+      `;
+      
+      // Insert alert at the top of the current card body
+      const cardBody = document.querySelector('#loginBox .card-body, #appBox .card-body');
+      cardBody.insertBefore(alertDiv, cardBody.firstChild);
+      
+      // Auto remove after 5 seconds (except info alerts)
+      if (type !== "info") {
+        setTimeout(() => {
+          if (alertDiv.parentNode) {
+            alertDiv.style.opacity = "0";
+            alertDiv.style.transition = "opacity 0.5s";
+            setTimeout(() => {
+              if (alertDiv.parentNode) alertDiv.remove();
+            }, 500);
+          }
+        }, 5000);
+      }
+    }
+
+    /* ---------- LOGOUT ---------- */
+    function logout() {
+      if (confirm("Are you sure you want to logout? All unsaved data will be lost.")) {
+        // Reset state
+        MAX_USERS = 0;
+        totalUsers = 0;
+        currentUser = "";
+        for (let key in data) delete data[key];
+        
+        // Clear form
+        document.getElementById("loginUser").value = "";
+        document.getElementById("loginPass").value = "";
+        
+        // Hide current user info
+        document.getElementById("currentUserInfo").classList.add("hidden");
+        
+        // Switch views
+        document.getElementById("appBox").classList.add("hidden");
+        document.getElementById("loginBox").classList.remove("hidden");
+        document.getElementById("loginBox").classList.add("fade-in");
+        
+        showAlert("You have been logged out", "success");
+      }
+    }
+
+    /* ---------- INITIALIZATION ---------- */
+    document.addEventListener('DOMContentLoaded', function() {
+      // Focus on login user field on page load
+      document.getElementById('loginUser').focus();
+      
+      // Login form enter key
+      document.getElementById('loginPass').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') login();
+      });
+      
+      // Add user form enter key
+      document.getElementById('password').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') addUser();
+      });
+    });
+  </script>
+</body>
+</html>
