@@ -535,6 +535,28 @@
       font-size: 0.9rem;
       backdrop-filter: blur(5px);
     }
+
+    /* Auto-save Indicator */
+    .auto-save-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--success);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .auto-save-indicator.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -572,6 +594,9 @@
         
         <div class="footer">
           <p>Authorized users only. Unauthorized access is prohibited.</p>
+          <p style="font-size: 0.8rem; margin-top: 5px;">
+            <i class="fas fa-database"></i> Data is automatically saved to your browser
+          </p>
         </div>
       </div>
     </div>
@@ -675,10 +700,15 @@
         </div>
         
         <div class="footer">
-          <p>King Session Tool v1.2 • Data will be lost on page refresh</p>
+          <p>King Session Tool v1.3 • Data is automatically saved</p>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Auto-save Indicator -->
+  <div id="autoSaveIndicator" class="auto-save-indicator">
+    <i class="fas fa-save"></i> Data saved
   </div>
 
   <script>
@@ -703,8 +733,84 @@
     /* ---------- STATE ---------- */
     let MAX_USERS = 0;
     let totalUsers = 0;
-    const data = {};
+    let data = {}; // Changed from const to let
     let currentUser = ""; // Store current logged in user
+
+    /* ---------- LOCAL STORAGE FUNCTIONS ---------- */
+    const STORAGE_KEYS = {
+      USER_DATA: 'king_session_user_data',
+      CURRENT_USER: 'king_session_current_user',
+      USER_LIMIT: 'king_session_user_limit'
+    };
+
+    // Save data to localStorage
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(data));
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, currentUser);
+        localStorage.setItem(STORAGE_KEYS.USER_LIMIT, MAX_USERS.toString());
+        
+        // Show auto-save indicator
+        showAutoSaveIndicator();
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+      }
+    }
+
+    // Load data from localStorage
+    function loadFromLocalStorage() {
+      try {
+        const savedData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
+        const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+        const savedLimit = localStorage.getItem(STORAGE_KEYS.USER_LIMIT);
+        
+        if (savedData) {
+          data = JSON.parse(savedData);
+          
+          // Calculate total users from loaded data
+          totalUsers = 0;
+          for (let domain in data) {
+            if (data[domain] && data[domain].users) {
+              totalUsers += data[domain].users.length;
+            }
+          }
+        }
+        
+        if (savedUser) {
+          currentUser = savedUser;
+        }
+        
+        if (savedLimit) {
+          MAX_USERS = parseInt(savedLimit, 10);
+        }
+        
+        return { hasData: !!savedData, hasUser: !!savedUser };
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+        return { hasData: false, hasUser: false };
+      }
+    }
+
+    // Clear localStorage
+    function clearLocalStorage() {
+      try {
+        localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+        localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+        localStorage.removeItem(STORAGE_KEYS.USER_LIMIT);
+      } catch (error) {
+        console.error('Error clearing localStorage:', error);
+      }
+    }
+
+    // Show auto-save indicator
+    function showAutoSaveIndicator() {
+      const indicator = document.getElementById('autoSaveIndicator');
+      indicator.classList.add('show');
+      
+      setTimeout(() => {
+        indicator.classList.remove('show');
+      }, 2000);
+    }
 
     /* ---------- HELPER FUNCTION: Convert user ID to lowercase ---------- */
     function normalizeUserData(dataObj) {
@@ -740,7 +846,7 @@
       
       // Update UI with current user info
       document.getElementById("limit").textContent = MAX_USERS;
-      document.getElementById("remaining").textContent = MAX_USERS;
+      document.getElementById("remaining").textContent = MAX_USERS - totalUsers;
       document.getElementById("currentUsername").textContent = u;
       document.getElementById("currentUserInfo").classList.remove("hidden");
       
@@ -751,7 +857,10 @@
       document.getElementById("appBox").classList.remove("hidden");
       document.getElementById("appBox").classList.add("fade-in");
       
-      showAlert(`Welcome, ${u}! You can add up to ${MAX_USERS} users.`, "success");
+      // Update UI with loaded data
+      updateUI();
+      
+      showAlert(`Welcome back, ${u}! Your data has been loaded. You can add up to ${MAX_USERS} users.`, "success");
     }
 
     /* ---------- ADD USER ---------- */
@@ -788,6 +897,11 @@
       // Store user ID as entered (will be converted to lowercase in JSON output)
       data[domain].users.push([user, pass]);
       totalUsers++;
+      
+      // Save to localStorage
+      saveToLocalStorage();
+      
+      // Update UI
       updateUI();
 
       // Clear form
@@ -907,7 +1021,13 @@
         const removed = data[domain].users.splice(index, 1);
         totalUsers--;
         if (data[domain].users.length === 0) delete data[domain];
+        
+        // Save to localStorage
+        saveToLocalStorage();
+        
+        // Update UI
         updateUI();
+        
         showAlert(`User "${removed[0][0]}" removed from ${domain}`, "success");
       }
     }
@@ -1086,16 +1206,10 @@ ${jsonData}
 
     /* ---------- LOGOUT ---------- */
     function logout() {
-      if (confirm("Are you sure you want to logout? All unsaved data will be lost.")) {
-        // Reset state
-        MAX_USERS = 0;
-        totalUsers = 0;
+      if (confirm("Are you sure you want to logout? Your data will be saved automatically.")) {
+        // Clear current user session
         currentUser = "";
-        for (let key in data) delete data[key];
-        
-        // Clear form
-        document.getElementById("loginUser").value = "";
-        document.getElementById("loginPass").value = "";
+        MAX_USERS = 0;
         
         // Hide current user info
         document.getElementById("currentUserInfo").classList.add("hidden");
@@ -1105,14 +1219,26 @@ ${jsonData}
         document.getElementById("loginBox").classList.remove("hidden");
         document.getElementById("loginBox").classList.add("fade-in");
         
-        showAlert("You have been logged out", "success");
+        // Clear login form
+        document.getElementById("loginUser").value = "";
+        document.getElementById("loginPass").value = "";
+        
+        showAlert("You have been logged out. Your data is saved in your browser.", "success");
       }
     }
 
     /* ---------- INITIALIZATION ---------- */
     document.addEventListener('DOMContentLoaded', function() {
+      // Load saved data from localStorage
+      const saved = loadFromLocalStorage();
+      
       // Focus on login user field on page load
       document.getElementById('loginUser').focus();
+      
+      // If user was previously logged in and has saved data, show login with message
+      if (saved.hasUser) {
+        showAlert("You have saved data in your browser. Please login to continue.", "info");
+      }
       
       // Login form enter key
       document.getElementById('loginPass').addEventListener('keypress', function(e) {
@@ -1122,6 +1248,13 @@ ${jsonData}
       // Add user form enter key
       document.getElementById('password').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') addUser();
+      });
+      
+      // Save data before page unload (extra safety)
+      window.addEventListener('beforeunload', function() {
+        if (currentUser !== "") {
+          saveToLocalStorage();
+        }
       });
     });
   </script>
