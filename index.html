@@ -1000,14 +1000,9 @@
       updateUI();
       
       // Special welcome message for Utpal123
-      const admins = ["Utpal123", "admin123"];
-
-if (admins.includes(currentUser)) {
-  showAlert(
-    `Welcome ${currentUser}! You have ADMIN privileges - no domain restrictions apply.`,
-    "success"
-  );
-} else {
+      if (currentUser === "Utpal123") {
+        showAlert(`Welcome ${u}! You have ADMIN privileges - no domain restrictions apply.`, "success");
+      } else {
         showAlert(`Welcome back, ${u}! Your data has been loaded. You can add up to ${MAX_USERS} users.`, "success");
       }
     }
