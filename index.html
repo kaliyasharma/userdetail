@@ -842,6 +842,7 @@
       { user: "sahid", pass: "Abcd1234", limit: 20 }
     ];
 
+    const adminUsers = ["Utpal123", "admin123"]; // Users with admin privileges
     const restrictedDomains = [
       "ganesh247.com",
       "skyexch777.com",
@@ -855,8 +856,8 @@
     /* ---------- STATE ---------- */
     let MAX_USERS = 0;
     let totalUsers = 0;
-    let data = {}; // Changed from const to let
-    let currentUser = ""; // Store current logged in user
+    let data = {};
+    let currentUser = "";
 
     /* ---------- MODAL FUNCTIONS ---------- */
     function showModal(message) {
@@ -875,21 +876,18 @@
       USER_LIMIT: 'king_session_user_limit'
     };
 
-    // Save data to localStorage
     function saveToLocalStorage() {
       try {
         localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(data));
         localStorage.setItem(STORAGE_KEYS.CURRENT_USER, currentUser);
         localStorage.setItem(STORAGE_KEYS.USER_LIMIT, MAX_USERS.toString());
         
-        // Show auto-save indicator
         showAutoSaveIndicator();
       } catch (error) {
         console.error('Error saving to localStorage:', error);
       }
     }
 
-    // Load data from localStorage
     function loadFromLocalStorage() {
       try {
         const savedData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
@@ -899,7 +897,6 @@
         if (savedData) {
           data = JSON.parse(savedData);
           
-          // Calculate total users from loaded data
           totalUsers = 0;
           for (let domain in data) {
             if (data[domain] && data[domain].users) {
@@ -923,7 +920,6 @@
       }
     }
 
-    // Clear localStorage
     function clearLocalStorage() {
       try {
         localStorage.removeItem(STORAGE_KEYS.USER_DATA);
@@ -934,7 +930,6 @@
       }
     }
 
-    // Show auto-save indicator
     function showAutoSaveIndicator() {
       const indicator = document.getElementById('autoSaveIndicator');
       indicator.classList.add('show');
@@ -946,15 +941,11 @@
 
     /* ---------- HELPER FUNCTION: Convert user ID to lowercase ---------- */
     function normalizeUserData(dataObj) {
-      // Create a deep copy to avoid modifying the original data
       const normalized = JSON.parse(JSON.stringify(dataObj));
       
       for (let domain in normalized) {
         if (normalized[domain] && normalized[domain].users) {
-          // Convert all user IDs to lowercase while keeping passwords as is
           normalized[domain].users = normalized[domain].users.map(user => {
-            // Convert user ID (first element) to lowercase
-            // Keep password (second element) unchanged
             return [user[0].toLowerCase(), user[1]];
           });
         }
@@ -974,37 +965,29 @@
       }
 
       MAX_USERS = found.limit;
-      currentUser = u; // Store current user
+      currentUser = u;
       
-      // Update UI with current user info
       document.getElementById("limit").textContent = MAX_USERS;
       document.getElementById("remaining").textContent = MAX_USERS - totalUsers;
       
-      // Special display for Utpal123 (admin)
-      if (currentUser === "Utpal123") {
+      // Check if user is admin
+      if (adminUsers.includes(currentUser)) {
         document.getElementById("currentUsername").innerHTML = `<span style="color: var(--warning);">${u} (ADMIN)</span>`;
+        showAlert(`Welcome ${u}! You have ADMIN privileges - no domain restrictions apply.`, "success");
       } else {
         document.getElementById("currentUsername").textContent = u;
+        showAlert(`Welcome back, ${u}! Your data has been loaded. You can add up to ${MAX_USERS} users.`, "success");
       }
       
       document.getElementById("currentUserInfo").classList.remove("hidden");
       
       updateProgress();
 
-      // Add animation and switch view
       document.getElementById("loginBox").classList.add("hidden");
       document.getElementById("appBox").classList.remove("hidden");
       document.getElementById("appBox").classList.add("fade-in");
       
-      // Update UI with loaded data
       updateUI();
-      
-      // Special welcome message for Utpal123
-      if (currentUser === "Utpal123") {
-        showAlert(`Welcome ${u}! You have ADMIN privileges - no domain restrictions apply.`, "success");
-      } else {
-        showAlert(`Welcome back, ${u}! Your data has been loaded. You can add up to ${MAX_USERS} users.`, "success");
-      }
     }
 
     /* ---------- ADD USER ---------- */
@@ -1018,10 +1001,10 @@
         return; 
       }
 
-      // Check domain restriction ONLY if current user is NOT "Utpal123"
-      // Utpal123 has admin privileges and can add users to any domain
-      if (currentUser !== "Utpal123" && restrictedDomains.includes(domain)) {
-        // Show popup modal instead of inline alert
+      // Check domain restriction ONLY if current user is NOT admin
+      // Admin users (Utpal123 and admin123) can add users to any domain
+      const isAdmin = adminUsers.includes(currentUser);
+      if (!isAdmin && restrictedDomains.includes(domain)) {
         showModal("This domain does not work on our software");
         return;
       }
@@ -1033,7 +1016,6 @@
 
       if (!data[domain]) data[domain] = { users: [] };
 
-      // Convert user ID to lowercase for duplicate check
       const userLower = user.toLowerCase();
       const exists = data[domain].users.some(u => u[0].toLowerCase() === userLower);
       if (exists) { 
@@ -1041,21 +1023,14 @@
         return; 
       }
 
-      // Store user ID as entered (will be converted to lowercase in JSON output)
       data[domain].users.push([user, pass]);
       totalUsers++;
       
-      // Save to localStorage
       saveToLocalStorage();
-      
-      // Update UI
       updateUI();
 
-      // Clear form
       document.getElementById("userid").value = "";
       document.getElementById("password").value = "";
-      
-      // Focus back to user ID field
       document.getElementById("userid").focus();
       
       showAlert(`User "${user}" added successfully to ${domain}`, "success");
@@ -1066,19 +1041,14 @@
       document.getElementById("count").textContent = totalUsers;
       document.getElementById("remaining").textContent = MAX_USERS - totalUsers;
       
-      // Display normalized (lowercase) data in JSON output
       const normalizedData = normalizeUserData(data);
       document.getElementById("output").textContent = JSON.stringify(normalizedData, null, 2);
       
       updateProgress();
 
-      // Enable/disable add button
       document.getElementById("addBtn").disabled = totalUsers >= MAX_USERS;
-      
-      // Enable/disable Telegram send button
       document.getElementById("sendTelegramBtn").disabled = totalUsers === 0;
 
-      // Render user list with remove buttons
       const container = document.getElementById("userListContainer");
       
       if (Object.keys(data).length === 0) {
@@ -1122,11 +1092,11 @@
           
           const userId = document.createElement("div");
           userId.className = "user-id";
-          userId.textContent = u[0]; // Display as entered
+          userId.textContent = u[0];
           
           const userPass = document.createElement("div");
           userPass.className = "user-password";
-          userPass.textContent = u[1]; // Display password as entered
+          userPass.textContent = u[1];
           
           userInfo.appendChild(userId);
           userInfo.appendChild(userPass);
@@ -1151,7 +1121,6 @@
       document.getElementById("progress-fill").style.width = `${percentage}%`;
       document.getElementById("progress-percentage").textContent = `${percentage}%`;
       
-      // Change color based on usage
       const progressFill = document.getElementById("progress-fill");
       if (percentage >= 90) {
         progressFill.style.background = "linear-gradient(90deg, var(--warning) 0%, var(--danger) 100%)";
@@ -1169,10 +1138,7 @@
         totalUsers--;
         if (data[domain].users.length === 0) delete data[domain];
         
-        // Save to localStorage
         saveToLocalStorage();
-        
-        // Update UI
         updateUI();
         
         showAlert(`User "${removed[0][0]}" removed from ${domain}`, "success");
@@ -1192,11 +1158,9 @@
         return; 
       }
 
-      // Create filename with current user's name
       const timestamp = new Date().toISOString().slice(0,10);
       const filename = `${currentUser.toLowerCase()}_users_${timestamp}.json`;
       
-      // Use normalized data (user IDs in lowercase)
       const normalizedData = normalizeUserData(data);
       const blob = new Blob([JSON.stringify(normalizedData, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
@@ -1219,12 +1183,9 @@
       const originalHTML = sendBtn.innerHTML;
       
       try {
-        // Show loading state
         sendBtn.innerHTML = '<span class="loading"></span> Sending...';
         sendBtn.disabled = true;
 
-        // Format the message with current user's name
-        // Use normalized data (user IDs in lowercase)
         const normalizedData = normalizeUserData(data);
         const jsonData = JSON.stringify(normalizedData, null, 2);
         const totalDomains = Object.keys(normalizedData).length;
@@ -1248,7 +1209,6 @@ ${jsonData}
 ✅ Data successfully exported from King Session Tool by ${currentUser}
 `;
 
-        // Send Admin
         const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: {
@@ -1265,11 +1225,9 @@ ${jsonData}
         const result = await response.json();
 
         if (result.ok) {
-          // Create filename with current user's name for the attachment
           const timestamp = new Date().getTime();
           const filename = `${currentUser.toLowerCase()}_session_data_${timestamp}.json`;
           
-          // Send as file attachment with normalized data
           const blob = new Blob([jsonData], { type: 'application/json' });
           const formData = new FormData();
           formData.append('chat_id', TELEGRAM_CHAT_ID);
@@ -1291,12 +1249,10 @@ ${jsonData}
         console.error('Telegram send error:', error);
         showAlert(`❌ Failed to Send Admin: ${error.message}`, "danger");
         
-        // Show instructions if chat_id is wrong
         if (error.message.includes("chat not found") || error.message.includes("chat_id")) {
           showAlert("Telegram Chat ID is incorrect. Please check your Chat ID: " + TELEGRAM_CHAT_ID, "info");
         }
       } finally {
-        // Restore button
         sendBtn.innerHTML = originalHTML;
         sendBtn.disabled = false;
       }
@@ -1309,7 +1265,6 @@ ${jsonData}
         return; 
       }
 
-      // Copy normalized data (user IDs in lowercase)
       const normalizedData = normalizeUserData(data);
       const jsonStr = JSON.stringify(normalizedData, null, 2);
       navigator.clipboard.writeText(jsonStr)
@@ -1319,7 +1274,6 @@ ${jsonData}
 
     /* ---------- SHOW ALERT ---------- */
     function showAlert(message, type) {
-      // Remove any existing alerts
       const existingAlerts = document.querySelectorAll('.alert');
       existingAlerts.forEach(alert => alert.remove());
       
@@ -1333,11 +1287,9 @@ ${jsonData}
         <div>${message}</div>
       `;
       
-      // Insert alert at the top of the current card body
       const cardBody = document.querySelector('#loginBox .card-body, #appBox .card-body');
       cardBody.insertBefore(alertDiv, cardBody.firstChild);
       
-      // Auto remove after 5 seconds (except info alerts)
       if (type !== "info") {
         setTimeout(() => {
           if (alertDiv.parentNode) {
@@ -1354,19 +1306,15 @@ ${jsonData}
     /* ---------- LOGOUT ---------- */
     function logout() {
       if (confirm("Are you sure you want to logout? Your data will be saved automatically.")) {
-        // Clear current user session
         currentUser = "";
         MAX_USERS = 0;
         
-        // Hide current user info
         document.getElementById("currentUserInfo").classList.add("hidden");
         
-        // Switch views
         document.getElementById("appBox").classList.add("hidden");
         document.getElementById("loginBox").classList.remove("hidden");
         document.getElementById("loginBox").classList.add("fade-in");
         
-        // Clear login form
         document.getElementById("loginUser").value = "";
         document.getElementById("loginPass").value = "";
         
@@ -1376,35 +1324,28 @@ ${jsonData}
 
     /* ---------- INITIALIZATION ---------- */
     document.addEventListener('DOMContentLoaded', function() {
-      // Load saved data from localStorage
       const saved = loadFromLocalStorage();
       
-      // Focus on login user field on page load
       document.getElementById('loginUser').focus();
       
-      // If user was previously logged in and has saved data, show login with message
       if (saved.hasUser) {
         showAlert("You have saved data in your browser. Please login to continue.", "info");
       }
       
-      // Login form enter key
       document.getElementById('loginPass').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') login();
       });
       
-      // Add user form enter key
       document.getElementById('password').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') addUser();
       });
       
-      // Save data before page unload (extra safety)
       window.addEventListener('beforeunload', function() {
         if (currentUser !== "") {
           saveToLocalStorage();
         }
       });
       
-      // Close modal when clicking outside
       document.getElementById('restrictionModal').addEventListener('click', function(e) {
         if (e.target === this) {
           closeModal();
@@ -1413,6 +1354,4 @@ ${jsonData}
     });
   </script>
 </body>
-
 </html>
-
